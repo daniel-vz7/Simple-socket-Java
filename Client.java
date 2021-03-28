@@ -29,14 +29,15 @@ public class Client {
     // Preparing socket and data
     Socket clientSocket = new Socket("localhost", 1234);
     String instruction = option.trim() + ',' + filmName.trim();
+    // Write request in stream
     DataOutputStream dataToSend = new DataOutputStream(clientSocket.getOutputStream());
-    dataToSend.writeUTF(instruction);
+    dataToSend.write(instruction.getBytes());
     dataToSend.flush();
-
+    
     // Receive response
     InputStream inputStream = clientSocket.getInputStream();
-    DataInputStream responseStream = new DataInputStream(inputStream);
-    String payload = new String(responseStream.readUTF());
+    BufferedReader responseStream = new BufferedReader(new InputStreamReader(inputStream));
+    String payload = responseStream.readLine();
     String operation = payload.split(",")[0];
     String response = payload.split(",")[1];
     if (operation.equals("1")) System.out.println("La respuesta es: " + response);

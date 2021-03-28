@@ -19,11 +19,20 @@ public class Server {
 
     // Start receiving requests
     ServerSocket serverSocket = new ServerSocket(1234);
+    System.out.println("Escuchando en el puerto " + 1234);
     while (true) {
       Socket socketInstance = serverSocket.accept(); // Wait and accept a connection
-      // Receive instruction
+      // Get instruction
       DataInputStream dIn = new DataInputStream(socketInstance.getInputStream());
-      String instruction = dIn.readUTF();
+      byte[] bs = new byte[500];
+      dIn.read(bs);  
+      String instruction = "";
+      for (byte b:bs) {  
+        char c = (char)b;  
+        instruction += c;
+      }
+      instruction = instruction.trim();
+
       int option = Integer.parseInt(instruction.split(",")[0]);
       String filmName = instruction.split(",")[1];
       String response = "";
@@ -39,8 +48,8 @@ public class Server {
           break;
         }
       }
-      if (response.equals("")) dos.writeUTF("0,0");
-      else dos.writeUTF("1," + response);
+      if (response.equals("")) dos.write(("0,0").getBytes());
+      else dos.write(("1," + response).getBytes());
 
       // Close the connection, but not the server socket
       dos.close();
